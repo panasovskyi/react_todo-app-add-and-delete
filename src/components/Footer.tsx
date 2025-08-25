@@ -24,10 +24,8 @@ export const Footer: React.FC<Props> = ({
   const deleteAllHandle = (items: Todo[]) => {
     const toDelete = items.filter(item => item.completed);
 
-    // показуємо лоадер для всіх туду, що видаляються
     setIsDeleting(toDelete.map(item => item.id));
 
-    // видаляємо всі паралельно
     Promise.all(toDelete.map(item => onDelete(item.id))).finally(() =>
       setIsDeleting([]),
     );

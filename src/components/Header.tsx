@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 type Props = {
   todos: Todo[];
   onSubmit: (value: Todo) => Promise<void>;
+  errorMessage: string;
   setErrorMessage: (value: string) => void;
   isSubmitting: number | null;
   setIsSubmitting: (value: number | null) => void;
@@ -16,6 +17,7 @@ type Props = {
 export const Header: React.FC<Props> = ({
   todos,
   onSubmit,
+  errorMessage,
   setErrorMessage,
   isSubmitting,
   setIsSubmitting,
@@ -29,13 +31,16 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [todos]);
+  }, [todos, errorMessage]);
 
   const onSubmitHandle = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (title.trim().length === 0) {
       setErrorMessage('Title should not be empty');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
 
       return;
     }

@@ -89,8 +89,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          todos={getVisibleTodos(todos, sortField)}
+          todos={todos}
           onSubmit={createTodo}
+          errorMessage={errorMessage}
           setErrorMessage={setErrorMessage}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
@@ -99,7 +100,7 @@ export const App: React.FC = () => {
         />
 
         <TodoList
-          todos={todos}
+          todos={getVisibleTodos(todos, sortField)}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           onDelete={deleteTodo}
@@ -113,8 +114,8 @@ export const App: React.FC = () => {
             todos={[tempTodo]}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
-            onDelete={() => Promise.resolve()} // поки що нічого не видаляємо
-            isDeleting={[0]} // показуємо лоадер
+            onDelete={() => Promise.resolve()}
+            isDeleting={[0]}
             setIsDeleting={() => {}}
             isSubmitting={isSubmitting}
           />
