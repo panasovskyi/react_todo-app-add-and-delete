@@ -3,29 +3,26 @@
 
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
+import { Processing } from '../types/Processing';
 
 type Props = {
   todo: Todo;
-  isEditing: number | null;
-  setIsEditing: (value: number | null) => void;
   onDelete: (value: number) => Promise<void>;
-  isDeleting: number[];
-  setIsDeleting: (value: number[]) => void;
-  isSubmitting: number | null;
+  isProcessing: Processing;
+  setIsProcessing: React.Dispatch<React.SetStateAction<Processing>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  isEditing,
-  setIsEditing,
   onDelete,
-  isDeleting,
-  setIsDeleting,
-  isSubmitting,
+  isProcessing,
+  setIsProcessing,
 }) => {
   const onDeleteHandle = (todoId: number) => {
-    setIsDeleting([todoId]);
-    onDelete(todoId).finally(() => setIsDeleting([]));
+    setIsProcessing(prev => ({ ...prev, deleting: [todo.id] }));
+    onDelete(todoId).finally(() =>
+      setIsProcessing(prev => ({ ...prev, deleting: [] })),
+    );
   };
 
   return (
@@ -42,15 +39,17 @@ export const TodoItem: React.FC<Props> = ({
           checked={todo.completed}
         />
       </label>
-      {!isEditing ? (
+      {!isProcessing.editing ? (
         <span
           data-cy="TodoTitle"
           className="todo__title"
-          onDoubleClick={() => setIsEditing(todo.id)}
+          onDoubleClick={() =>
+            setIsProcessing(prev => ({ ...prev, editing: todo.id }))
+          }
         >
           {todo.title}
         </span>
-      ) : isEditing === todo.id ? (
+      ) : isProcessing.editing === todo.id ? (
         <form>
           <input
             data-cy="TodoTitleField"
@@ -65,7 +64,7 @@ export const TodoItem: React.FC<Props> = ({
       )}
 
       {/* Remove button appears only on hover */}
-      {isEditing === todo.id || (
+      {isProcessing.editing === todo.id || (
         <button
           type="button"
           className="todo__remove"
@@ -81,7 +80,9 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isDeleting.includes(todo.id) || isSubmitting === todo.id,
+          'is-active':
+            isProcessing.deleting.includes(todo.id) ||
+            isProcessing.submitting === todo.id,
         })}
       >
         <div className="modal-background has-background-white-ter" />

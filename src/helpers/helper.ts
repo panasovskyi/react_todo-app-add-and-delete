@@ -12,3 +12,14 @@ export function getVisibleTodos(items: Todo[], sortType: SORTFIELD) {
 
   return preparedTodos;
 }
+
+export const showError = (
+  setErrorMessage: (value: string) => void,
+  message: string,
+) => {
+  setErrorMessage('');
+  setErrorMessage(message);
+  setTimeout(() => {
+    setErrorMessage('');
+  }, 3000);
+};

@@ -8,16 +8,20 @@ import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
 import { getVisibleTodos } from './helpers/helper';
+import { Processing } from './types/Processing';
 
 export const App: React.FC = () => {
   const [sortField, setSortField] = useState<SORTFIELD>(SORTFIELD.ALL);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isEditing, setIsEditing] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
+
+  const [isProcessing, setIsProcessing] = useState<Processing>({
+    editing: null,
+    submitting: null,
+    deleting: [],
+  });
 
   const showError = (message: string) => {
     setErrorMessage(message);
@@ -93,31 +97,25 @@ export const App: React.FC = () => {
           onSubmit={createTodo}
           errorMessage={errorMessage}
           setErrorMessage={setErrorMessage}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
           title={title}
           setTitle={setTitle}
+          isProcessing={isProcessing}
+          setIsProcessing={setIsProcessing}
         />
 
         <TodoList
           todos={getVisibleTodos(todos, sortField)}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
           onDelete={deleteTodo}
-          isDeleting={isDeleting}
-          setIsDeleting={setIsDeleting}
-          isSubmitting={isSubmitting}
+          isProcessing={isProcessing}
+          setIsProcessing={setIsProcessing}
         />
 
         {tempTodo && (
           <TodoList
             todos={[tempTodo]}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
             onDelete={() => Promise.resolve()}
-            isDeleting={[0]}
-            setIsDeleting={() => {}}
-            isSubmitting={isSubmitting}
+            isProcessing={isProcessing}
+            setIsProcessing={setIsProcessing}
           />
         )}
 
@@ -128,8 +126,7 @@ export const App: React.FC = () => {
             sortField={sortField}
             setSortField={setSortField}
             onDelete={deleteTodo}
-            isDeleting={isDeleting}
-            setIsDeleting={setIsDeleting}
+            setIsProcessing={setIsProcessing}
           />
         )}
       </div>

@@ -2,16 +2,17 @@ import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import * as todoService from '../api/todos';
 import { useEffect, useRef } from 'react';
+import { Processing } from '../types/Processing';
 
 type Props = {
   todos: Todo[];
   onSubmit: (value: Todo) => Promise<void>;
   errorMessage: string;
   setErrorMessage: (value: string) => void;
-  isSubmitting: number | null;
-  setIsSubmitting: (value: number | null) => void;
   title: string;
   setTitle: (value: string) => void;
+  isProcessing: Processing;
+  setIsProcessing: React.Dispatch<React.SetStateAction<Processing>>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -19,10 +20,10 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   errorMessage,
   setErrorMessage,
-  isSubmitting,
-  setIsSubmitting,
   title,
   setTitle,
+  isProcessing,
+  setIsProcessing,
 }) => {
   const allTodosAreDone = todos.every(t => t.completed);
   const titleField = useRef<HTMLInputElement>(null);
@@ -45,7 +46,7 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    setIsSubmitting(0);
+    setIsProcessing(prev => ({ ...prev, submitting: 0 }));
 
     onSubmit({
       id: 0,
@@ -54,7 +55,7 @@ export const Header: React.FC<Props> = ({
       completed: false,
     })
       .then(() => setTitle(''))
-      .finally(() => setIsSubmitting(null));
+      .finally(() => setIsProcessing(prev => ({ ...prev, submitting: null })));
   };
 
   return (
@@ -77,7 +78,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          disabled={isSubmitting === 0}
+          disabled={isProcessing.submitting === 0}
           ref={titleField}
         />
       </form>

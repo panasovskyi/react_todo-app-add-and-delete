@@ -1,21 +1,21 @@
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { SORTFIELD } from '../types/SortField';
+import { Processing } from '../types/Processing';
 
 type Props = {
   todos: Todo[];
   sortField: SORTFIELD;
   setSortField: (value: SORTFIELD) => void;
   onDelete: (value: number) => Promise<void>;
-  isDeleting: number[];
-  setIsDeleting: (value: number[]) => void;
+  setIsProcessing: React.Dispatch<React.SetStateAction<Processing>>;
 };
 export const Footer: React.FC<Props> = ({
   todos,
   sortField,
   setSortField,
-  setIsDeleting,
   onDelete,
+  setIsProcessing,
 }) => {
   const someTodosAreDone = todos.some(t => t.completed);
   const activeTodos = todos.filter(t => !t.completed);
@@ -24,10 +24,13 @@ export const Footer: React.FC<Props> = ({
   const deleteAllHandle = (items: Todo[]) => {
     const toDelete = items.filter(item => item.completed);
 
-    setIsDeleting(toDelete.map(item => item.id));
+    setIsProcessing(prev => ({
+      ...prev,
+      deleting: toDelete.map(item => item.id),
+    }));
 
     Promise.all(toDelete.map(item => onDelete(item.id))).finally(() =>
-      setIsDeleting([]),
+      setIsProcessing(prev => ({ ...prev, deleting: [] })),
     );
   };
 
