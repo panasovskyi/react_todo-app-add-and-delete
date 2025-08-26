@@ -18,11 +18,14 @@ export const TodoItem: React.FC<Props> = ({
   isProcessing,
   setIsProcessing,
 }) => {
-  const onDeleteHandle = (todoId: number) => {
-    setIsProcessing(prev => ({ ...prev, deleting: [todo.id] }));
-    onDelete(todoId).finally(() =>
-      setIsProcessing(prev => ({ ...prev, deleting: [] })),
-    );
+  const onDeleteHandle = async (todoId: number) => {
+    setIsProcessing(prev => ({ ...prev, deleting: [todoId] }));
+
+    try {
+      await onDelete(todoId);
+    } finally {
+      setIsProcessing(prev => ({ ...prev, deleting: [] }));
+    }
   };
 
   return (

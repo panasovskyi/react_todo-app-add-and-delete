@@ -32,37 +32,40 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    todoService
-      .getTodos()
-      .then(setTodos)
-      .catch(() => {
+    const loadTodos = async () => {
+      try {
+        const todosFromServer = await todoService.getTodos();
+
+        setTodos(todosFromServer);
+      } catch {
         showError(ErrorTypes.getError);
-      });
+      }
+    };
+
+    loadTodos();
   }, []);
 
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
-  const deleteTodo = (todoId: number) => {
+  const deleteTodo = async (todoId: number) => {
     setErrorMessage('');
 
-    return todoService
-      .deleteTodo(todoId)
-      .then(() => {
-        setTodos(currentTodos =>
-          currentTodos.filter(currentTodo => currentTodo.id !== todoId),
-        );
-      })
-      .catch(error => {
-        setTodos(todos);
-        showError(ErrorTypes.deleteError);
+    try {
+      await todoService.deleteTodo(todoId);
 
-        throw error;
-      });
+      setTodos(currentTodos =>
+        currentTodos.filter(currentTodo => currentTodo.id !== todoId),
+      );
+    } catch (error) {
+      setTodos(todos);
+      showError(ErrorTypes.deleteError);
+      throw error;
+    }
   };
 
-  const createTodo = (todo: Todo) => {
+  const createTodo = async (todo: Todo) => {
     setErrorMessage('');
 
     const temporaryTodo: Todo = {
@@ -74,18 +77,16 @@ export const App: React.FC = () => {
 
     setTempTodo(temporaryTodo);
 
-    return todoService
-      .createTodo(todo)
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-        setTempTodo(null);
-      })
-      .catch(error => {
-        setTempTodo(null);
-        showError(ErrorTypes.postError);
+    try {
+      const newTodo = await todoService.createTodo(todo);
 
-        throw error;
-      });
+      setTodos(currentTodos => [...currentTodos, newTodo]);
+      setTempTodo(null);
+    } catch (error) {
+      setTempTodo(null);
+      showError(ErrorTypes.postError);
+      throw error;
+    }
   };
 
   return (
