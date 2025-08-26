@@ -9,6 +9,7 @@ import { TodoList } from './components/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
 import { getVisibleTodos } from './helpers/helper';
 import { Processing } from './types/Processing';
+import { ErrorTypes } from './types/ErrorType';
 
 export const App: React.FC = () => {
   const [sortField, setSortField] = useState<SORTFIELD>(SORTFIELD.ALL);
@@ -35,7 +36,7 @@ export const App: React.FC = () => {
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        showError('Unable to load todos');
+        showError(ErrorTypes.getError);
       });
   }, []);
 
@@ -55,7 +56,7 @@ export const App: React.FC = () => {
       })
       .catch(error => {
         setTodos(todos);
-        showError('Unable to delete a todo');
+        showError(ErrorTypes.deleteError);
 
         throw error;
       });
@@ -81,7 +82,7 @@ export const App: React.FC = () => {
       })
       .catch(error => {
         setTempTodo(null);
-        showError('Unable to add a todo');
+        showError(ErrorTypes.postError);
 
         throw error;
       });

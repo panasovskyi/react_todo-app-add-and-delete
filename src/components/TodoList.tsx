@@ -16,6 +16,14 @@ export const TodoList: React.FC<Props> = ({
   isProcessing,
   setIsProcessing,
 }) => {
+  const getTransitionClass = (todoId: number) => {
+    if (isProcessing.submitting === todoId) {
+      return 'temp-item';
+    }
+
+    return 'item';
+  };
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
@@ -23,7 +31,7 @@ export const TodoList: React.FC<Props> = ({
           <CSSTransition
             key={todo.id}
             timeout={300}
-            classNames={todo.id === 0 ? 'temp-item' : 'item'}
+            classNames={getTransitionClass(todo.id)}
           >
             <TodoItem
               todo={todo}

@@ -3,6 +3,7 @@ import { Todo } from '../types/Todo';
 import * as todoService from '../api/todos';
 import { useEffect, useRef } from 'react';
 import { Processing } from '../types/Processing';
+import { ErrorTypes } from '../types/ErrorType';
 
 type Props = {
   todos: Todo[];
@@ -38,7 +39,7 @@ export const Header: React.FC<Props> = ({
     e.preventDefault();
 
     if (title.trim().length === 0) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorTypes.titleError);
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
