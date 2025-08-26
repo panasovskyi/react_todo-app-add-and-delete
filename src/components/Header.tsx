@@ -35,30 +35,28 @@ export const Header: React.FC<Props> = ({
     }
   }, [todos, errorMessage]);
 
-  const onSubmitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandle = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (title.trim().length === 0) {
       setErrorMessage(ErrorTypes.titleError);
-      setTimeout(() => setErrorMessage(''), 3000);
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
 
       return;
     }
 
     setIsProcessing(prev => ({ ...prev, submitting: 0 }));
 
-    try {
-      await onSubmit({
-        id: 0,
-        userId: todoService.USER_ID,
-        title: title.trim(),
-        completed: false,
-      });
-
-      setTitle('');
-    } finally {
-      setIsProcessing(prev => ({ ...prev, submitting: null }));
-    }
+    onSubmit({
+      id: 0,
+      userId: todoService.USER_ID,
+      title: title.trim(),
+      completed: false,
+    })
+      .then(() => setTitle(''))
+      .finally(() => setIsProcessing(prev => ({ ...prev, submitting: null })));
   };
 
   return (
